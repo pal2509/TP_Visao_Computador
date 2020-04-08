@@ -662,21 +662,22 @@ int vc_gray_scale_to_rgb(IVC* src, IVC* dst)
 }
 
 //Conversão de uma imagem em escale de cizento em binario por threshold
-int vc_gray_to_binary(IVC* srcdst, int threshold)
+int vc_gray_to_binary(IVC* src ,IVC* dst, int threshold)
 {
-	if (srcdst->width <= 0 || srcdst->height <= 0 || srcdst->data == NULL) return 0;
-	if (srcdst->channels != 1) return 0;
-
+	// Verificação de erros
+	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;
+	if ((src->width != dst->width) || (src->height != dst->height) || (src->channels != dst->channels)) return 0;
+	if (src->channels != 1) return 0;
 
 	int pos;
-	for (int y = 0; y < srcdst->height; y++)
+	for (int y = 0; y < src->height; y++)
 	{
-		for (int x = 0; x < srcdst->width; x++)
+		for (int x = 0; x < src->width; x++)
 		{
-			pos = y * srcdst->bytesperline + x * srcdst->channels;
+			pos = y * src->bytesperline + x * src->channels;
 
-			if (srcdst->data[pos] > threshold)srcdst->data[pos] = 255;
-			else srcdst->data[pos] = 0;
+			if (src->data[pos] > threshold)dst->data[pos] = 255;
+			else dst->data[pos] = 0;
 		}
 	}
 
@@ -815,7 +816,7 @@ int vc_gray_to_binary_bersen(IVC* src, IVC* dst, int kernel, int cmin)
 			}
 
 			if ((max - min) < cmin) threshold = (unsigned char)(src->levels / 2);
-			else threshold = (unsigned char)(src->levels / 2);
+			else threshold = (unsigned char)((min + max) / 2);
 
 			if (src->data[pos] > threshold)dst->data[pos] = 255;
 			else dst->data[pos] = 0;

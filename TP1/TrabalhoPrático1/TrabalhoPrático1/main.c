@@ -7,7 +7,7 @@ int main(void)
 {
 	IVC* image;
 	int i;
-	image = vc_read_image("Imagem02-8281DH.ppm");
+	image = vc_read_image("Imagem03-6468QN.ppm");
 	if (image == NULL)
 	{
 		printf("ERROR -> vc_read_image():\n\tFile not found!\n");
@@ -19,7 +19,7 @@ int main(void)
 
 	BoundingBox(image, bounding);
 
-
+	vc_write_image("M3.ppm", image);
 	printf("press any key to exit...\n");
 	getchar();
 
