@@ -778,7 +778,7 @@ int vc_gray_to_binary_midpoint(IVC* src, IVC* dst, int kernel)
 }
 
 // Converter de Gray para Binário (threshold automático Bersen)
-int vc_gray_to_binary_bersen(IVC* src, IVC* dst, int kernel, int cmin)
+int vc_gray_to_binary_bernsen(IVC* src, IVC* dst, int kernel, int cmin)
 {
 	// Verificação de erros
 	if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL)) return 0;

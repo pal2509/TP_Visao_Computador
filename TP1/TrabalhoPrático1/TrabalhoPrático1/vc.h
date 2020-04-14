@@ -51,7 +51,7 @@ int vc_gray_to_binary(IVC* src, IVC* dst, int threshold);
 int vc_bin_negative(IVC* srcdst);
 int vc_gray_to_binary_global_mean(IVC* srcdst);
 int vc_gray_to_binary_midpoint(IVC* src, IVC* dst, int kernel);
-int vc_gray_to_binary_bersen(IVC* src, IVC* dst, int kernel, int cmin);
+int vc_gray_to_binary_bernsen(IVC* src, IVC* dst, int kernel, int cmin);
 int vc_binary_dilate(IVC* src, IVC* dst, int kernel);
 int vc_binary_erode(IVC* src, IVC* dst, int kernel);
 int vc_binary_open(IVC* src, IVC* dst, int kernel);
