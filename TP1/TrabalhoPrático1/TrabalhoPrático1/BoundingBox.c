@@ -7,7 +7,9 @@ int BoundingBox(IVC* src)
 	IVC* bin = vc_image_new(src->width, src->height, 1, 255);//Imagen em binario para converter a imagem para binario
 	IVC* close = vc_image_new(src->width, src->height, 1, 255);//Imagem em bin para fazer um fecho close 
 	IVC* labeled = vc_image_new(src->width, src->height, 1, 255);//Imagem para os labels 
- 
+	
+	//A imagem é convertida para escala de cinzentos e depois para binário para ser mais de trabalhar com a imagem
+
 	vc_rgb_to_gray(src, gray);//Converter a imagem original para Escala de cinzentos
 	//vc_write_image("gray.pgm", gray);
 	vc_gray_to_binary_bernsen(gray, bin, 25, 240);//Converter para binário usando o metodo de bernsen com um cmin de 240 para encontrar zonas de alto
@@ -16,12 +18,12 @@ int BoundingBox(IVC* src)
 	//vc_write_image("bin.pgm", bin);
 	//vc_write_image("close.pgm", close);	
 	int labels = 0;//Variável para o número de labels encontrados
-	OVC* blobs = vc_binary_blob_labelling(close, labeled, &labels);//Fazer o labelling da imagem para uma variável que vai conter a informação
-																//dos blobs que podem se matriculass
+	OVC* blobs = vc_binary_blob_labelling(close, labeled, &labels);//Fazer o labelling da imagem para uma variável que vai conter a informação de todos
+																//os blobs na imagem, 1 deles sendo a matricula
 	//vc_write_image("labeled.pgm", labeled);
 	//printf("Labels: %d\n", labels);
 
-	vc_binary_blob_info(labeled, blobs, labels);//Preencher o array de blobs com a sua informação
+	vc_binary_blob_info(labeled, blobs, labels);//Preencher o array de blobs com a sua informação(área,perimetro,largura,altura,Xinicial,Yinicial)
 	int foundany = 0;
 	//Filtragem dos blobls encontrados
 	for (int i = 0; i < labels; i++)//Percorrer o array de blobs
