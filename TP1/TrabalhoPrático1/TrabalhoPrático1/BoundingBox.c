@@ -76,58 +76,22 @@ int BoundingBox(IVC* src)
 				//vc_write_image("matriculaclose.pgm", matriculaclose);
 				vc_bin_negative(matriculaclose);//Negativo do close
 				int nletras = 0;//Variável para o numero de blobs
-
+				//vc_write_image("matriculaclose.pgm", matriculaclose);
 				OVC* letras = vc_binary_blob_labelling(matriculaclose, matriculalabel, &nletras);//Fazer o labelling da imagem
 				//vc_write_image("matriculalabel.pgm", matriculalabel);
 
 				vc_binary_blob_info(matriculalabel, letras, nletras);//Preencher o array com a informação de cada label
-
+				int w = 0;
 				//Verificar quais sao os blobs validos
 				if (nletras >= 6)//Se o numero de blobs encontrados for menor 6 é descartado
-				{
-					/*
-					O desenho da bounding box da matricula é feita por partes, fazendo primeiro o desenho da reta superior percorrendo toda a
-					largura da matricula na mesma linha, depois a reta inferior da bounding box pelo mesmo processom. O desenho das laterais
-					da bounding box é feito percorrendo toda a altura da matricula numa coluna fixa.
-					*/
-					//Desenho do limite superior do blob 
-					for (int x = blobs[i].x; x < blobs[i].x + blobs[i].width; x++)
-					{
-						pos = blobs[i].y * src->bytesperline + x * src->channels;//Calculo da posiçao
-						src->data[pos] = 0;//R
-						src->data[pos + 1] = 255;//G
-						src->data[pos + 2] = 255;//B
-					}
-					//Desenho do limite inferior do blob 
-					for (int x = blobs[i].x; x < blobs[i].x + blobs[i].width; x++)
-					{
-						pos = (blobs[i].y + blobs[i].height) * src->bytesperline + x * src->channels;//Calculo da posiçao
-						src->data[pos] = 0;//R
-						src->data[pos + 1] = 255;//G
-						src->data[pos + 2] = 255;//B
-					}
-					//Desenho do limite esquerdo do blob 
-					for (int y = blobs[i].y; y < blobs[i].y + blobs[i].height; y++)
-					{
-						pos = y * src->bytesperline + blobs[i].x * src->channels;//Calculo da posiçao
-						src->data[pos] = 0;//R
-						src->data[pos + 1] = 255;//G
-						src->data[pos + 2] = 255;//B
-					}
-					//Desenho do limite direito do blob 
-					for (int y = blobs[i].y; y < blobs[i].y + blobs[i].height; y++)
-					{
-						pos = y * src->bytesperline + (blobs[i].x + blobs[i].width) * src->channels;//Calculo da posiçao
-						src->data[pos] = 0;//R
-						src->data[pos + 1] = 255;//G
-						src->data[pos + 2] = 255;//B
-					}
-
+				{		
+					
 					for (int l = 0; l < nletras; l++)//Percorrer os array de labels
 					{
 						r = (float)letras[l].width / (float)letras[l].height;//Racio de largura/altura
 						if (r > 0.25 && r < 0.9 && letras[l].area > 130)
 						{
+							w++;
 							/*
 							O desenho das letras é o mesmo processo da matricula sendo simplesmente com as dimensões das letras
 							*/
@@ -165,6 +129,48 @@ int BoundingBox(IVC* src)
 							}
 						}
 					}
+
+					if (w == 6)
+					{
+						/*
+					O desenho da bounding box da matricula é feita por partes, fazendo primeiro o desenho da reta superior percorrendo toda a
+					largura da matricula na mesma linha, depois a reta inferior da bounding box pelo mesmo processom. O desenho das laterais
+					da bounding box é feito percorrendo toda a altura da matricula numa coluna fixa.
+					*/
+					//Desenho do limite superior do blob 
+						for (int x = blobs[i].x; x < blobs[i].x + blobs[i].width; x++)
+						{
+							pos = blobs[i].y * src->bytesperline + x * src->channels;//Calculo da posiçao
+							src->data[pos] = 0;//R
+							src->data[pos + 1] = 255;//G
+							src->data[pos + 2] = 255;//B
+						}
+						//Desenho do limite inferior do blob 
+						for (int x = blobs[i].x; x < blobs[i].x + blobs[i].width; x++)
+						{
+							pos = (blobs[i].y + blobs[i].height) * src->bytesperline + x * src->channels;//Calculo da posiçao
+							src->data[pos] = 0;//R
+							src->data[pos + 1] = 255;//G
+							src->data[pos + 2] = 255;//B
+						}
+						//Desenho do limite esquerdo do blob 
+						for (int y = blobs[i].y; y < blobs[i].y + blobs[i].height; y++)
+						{
+							pos = y * src->bytesperline + blobs[i].x * src->channels;//Calculo da posiçao
+							src->data[pos] = 0;//R
+							src->data[pos + 1] = 255;//G
+							src->data[pos + 2] = 255;//B
+						}
+						//Desenho do limite direito do blob 
+						for (int y = blobs[i].y; y < blobs[i].y + blobs[i].height; y++)
+						{
+							pos = y * src->bytesperline + (blobs[i].x + blobs[i].width) * src->channels;//Calculo da posiçao
+							src->data[pos] = 0;//R
+							src->data[pos + 1] = 255;//G
+							src->data[pos + 2] = 255;//B
+						}
+					}
+					w = 0;
 				}
 				free(letras);//Libertar a memoria usada para a estrutura que guarda a informação das letras
 			}
@@ -193,7 +199,6 @@ int BoundingBox(IVC* src)
 		//printf("Labels: %d\n", labels);
 		vc_binary_blob_info(labeled, blobs, labels);//Preencher o array de blobs com a sua informação
 
-		int foundany = 0; //Variável para guardar se foi encontrado algum blob com os requesitos
 		//Filtragem dos blobls encontrados
 		for (int i = 0; i < labels; i++)//Percorrer o array de blobs
 		{
@@ -357,7 +362,8 @@ int BoundingBox(IVC* src)
 			}
 		}
 		free(blobs);//Libertar a memoria usada para a estrutura que guarda a informação das matriculas
-	}	
+	}
+	foundany = 0;
 }
 
 
